@@ -6,7 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="spring-mvc" />
+        <module name="spring-mvc.1312" />
+        <module name="crud-app" />
       </profile>
     </annotationProcessing>
   </component>
