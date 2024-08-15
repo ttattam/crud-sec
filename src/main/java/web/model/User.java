@@ -1,40 +1,40 @@
 package web.model;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotBlank;
+import java.util.Collection;
+import java.util.Set;
 
 @Entity
-@Table(name = "user")
-public class User {
-
+@Table(name="t_users")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "name")
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 3, max = 30, message = "Name should be between 3 and 30 characters")
     private String name;
+    private String lastname;
+    private byte age;
+    private String city;
+    private String password;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 
-    @Column(name = "email")
-    @Email(message = "Email should be valid")
-    @NotEmpty(message = "Email should not be empty")
-    private String email;
-
-    @Column(name = "age")
-    @Min(value = 0, message = "Age should be greater than 0")
-    private Integer age;
-
-    public User() {}
-
-    public User(String name, String email, Integer age) {
-        this.name = name;
-        this.email = email;
-        this.age = age;
+    public User() {
     }
+
+    public User(String name, String lastname, byte age, String city) {
+        this.name = name;
+        this.lastname = lastname;
+        this.age = age;
+        this.city = city;
+    }
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
+    private String email;
 
     public Long getId() {
         return id;
@@ -52,19 +52,74 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
-    public Integer getAge() {
+    public byte getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(byte age) {
         this.age = age;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

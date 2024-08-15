@@ -1,5 +1,6 @@
 package web.config;
 
+import web.model.Role;
 import web.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public class HibernateConfig {
         }
 
         factoryBean.setHibernateProperties(props);
-        factoryBean.setAnnotatedClasses(User.class);
+        factoryBean.setAnnotatedClasses(User.class, Role.class);
 
         return factoryBean;
     }

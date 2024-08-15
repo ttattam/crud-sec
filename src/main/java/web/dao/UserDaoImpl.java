@@ -1,15 +1,15 @@
 package web.dao;
 
-import web.model.User;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 
-@Repository
+@Component
 @Transactional
 public class UserDaoImpl implements UserDao {
 
@@ -23,24 +23,31 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
-        return entityManager.createQuery("select u from User u", User.class)
-                .getResultList();
+        return entityManager.createQuery("from User", User.class).getResultList();
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        User user = entityManager.find(User.class, id);
-        return Optional.ofNullable(user);
+    public User findById(Long id) {
+        return entityManager.find(User.class, id);
     }
 
     @Override
-    public void updateUser(User user) {
+    public void update(User user) {
         entityManager.merge(user);
     }
 
     @Override
     public void deleteById(Long id) {
-        Optional<User> userById = findById(id);
-        userById.ifPresent(user -> entityManager.remove(user));
+        User user = findById(id);
+        if (user != null) {
+            entityManager.remove(user);
+        }
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return entityManager.createQuery("from User where username = :username", User.class)
+                .setParameter("username", username)
+                .getSingleResult();
     }
 }
