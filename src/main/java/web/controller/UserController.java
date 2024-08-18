@@ -14,6 +14,7 @@ import javax.validation.Valid;
 @Controller
 public class UserController {
 
+
     private final UserService userService;
 
     @Autowired
@@ -24,19 +25,19 @@ public class UserController {
     @GetMapping("/admin")
     public String listUsers(Model model) {
         model.addAttribute("users", userService.findAll());
-        return "admin/user-list";
+        return "user-list";
     }
 
     @GetMapping("/admin/new")
     public String newUserForm(Model model) {
         model.addAttribute("user", new User());
-        return "admin/create_user";
+        return "/create_user";
     }
 
     @PostMapping("/admin")
     public String createUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "admin/create_user";
+            return "/create_user";
         }
         userService.save(user);
         return "redirect:/admin";
@@ -45,13 +46,13 @@ public class UserController {
     @GetMapping("/admin/edit/{id}")
     public String editUserForm(@PathVariable Long id, Model model) {
         model.addAttribute("user", userService.findById(id));
-        return "admin/edit_user";
+        return "/edit_user";
     }
 
     @PostMapping("/admin/edit")
     public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "admin/edit_user";
+            return "/edit_user";
         }
         userService.update(user);
         return "redirect:/admin";
@@ -67,6 +68,6 @@ public class UserController {
     public String userInfo(Authentication authentication, Model model) {
         User user = (User) authentication.getPrincipal();
         model.addAttribute("user", user);
-        return "user/user-info";
+        return "user-info";
     }
 }

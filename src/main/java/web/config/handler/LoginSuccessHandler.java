@@ -15,14 +15,16 @@ import java.util.Set;
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
-                                        HttpServletResponse httpServletResponse,
-                                        Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-        if (roles.contains("ROLE_ADMIN")) {
-            httpServletResponse.sendRedirect("/admin");
+        if (roles.contains("ADMIN")) {
+            response.sendRedirect("/admin");
+        } else if (roles.contains("USER")) {
+            response.sendRedirect("/user");
         } else {
-            httpServletResponse.sendRedirect("/user");
+            response.sendRedirect("/");
         }
     }
 }

@@ -3,30 +3,59 @@ package web.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.UserDao;
+import web.dao.RoleDao;
 import web.model.User;
+import web.model.Role;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
-    private final PasswordEncoder passwordEncoder;
+    private final RoleDao roleDao;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDao userDao, RoleDao roleDao) {
         this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
+        this.roleDao = roleDao;
+    }
+
+    @PostConstruct
+    public void init() {
+        Role adminRole = roleDao.getRoleByName("ADMIN");
+        if (adminRole == null) {
+            adminRole = new Role(1L, "ADMIN");
+            roleDao.save(adminRole);
+        }
+
+        Role userRole = roleDao.getRoleByName("USER");
+        if (userRole == null) {
+            userRole = new Role(2L, "USER");
+            roleDao.save(userRole);
+        }
+
+        if (userDao.findByUsername("admin") == null) {
+            User admin = new User();
+            admin.setUsername("roott");  // Устанавливаем имя пользователя
+            admin.setPassword("roott");
+            admin.setRoles(Set.of(adminRole, userRole));
+            admin.setEmail("admin@example.com");  // Добавляем email
+            admin.setName("roott");  // Добавляем имя
+            admin.setLastname("Adminov");  // Добавляем фамилию
+            admin.setAge((byte) 30);  // Добавляем возраст
+            userDao.save(admin);
+        }
     }
 
     @Transactional
     @Override
     public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
     }
 
@@ -45,9 +74,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void update(User user) {
-        if (!user.getPassword().equals(userDao.findById(user.getId()).getPassword())) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
         userDao.update(user);
     }
 

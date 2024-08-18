@@ -1,40 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>User List</title>
+    <title>Список пользователей</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .edit-btn, .create-btn { display: inline-block; margin-top: 10px; padding: 5px 10px; text-decoration: none; color: white; background-color: #007bff; border-radius: 3px; }
+        .logout-btn { display: inline-block; margin-top: 10px; padding: 5px 10px; text-decoration: none; color: white; background-color: #dc3545; border-radius: 3px; }
+    </style>
 </head>
 <body>
-<h1>User List</h1>
+<h1>Список пользователей</h1>
+
+<div sec:authorize="isAuthenticated()">
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Выйти" class="logout-btn"/>
+    </form>
+</div>
+
 <table>
-    <thead>
     <tr>
         <th>ID</th>
-        <th>Username</th>
+        <th>Имя пользователя</th>
         <th>Email</th>
-        <th>Age</th>
-        <th>Roles</th>
-        <th>Actions</th>
+        <th>Возраст</th>
+        <th>Роли</th>
+        <th>Действия</th>
     </tr>
-    </thead>
-    <tbody>
     <tr th:each="user : ${users}">
         <td th:text="${user.id}"></td>
         <td th:text="${user.username}"></td>
         <td th:text="${user.email}"></td>
         <td th:text="${user.age}"></td>
-        <td th:text="${user.roles}"></td>
         <td>
-            <a th:href="@{/admin/edit/{id}(id=${user.id})}">Edit</a>
-            <form th:action="@{/admin/delete/{id}(id=${user.id})}" method="post">
-                <input type="submit" value="Delete"/>
-            </form>
+            <span th:each="role, iterStat : ${user.roles}">
+                <span th:text="${role.name}"></span>
+                <span th:if="${!iterStat.last}">, </span>
+            </span>
+        </td>
+        <td>
+            <a class="edit-btn" th:href="@{/admin/edit/{id}(id=${user.id})}">Редактировать</a>
         </td>
     </tr>
-    </tbody>
 </table>
-<a th:href="@{/admin/new}">Create new user</a>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Logout"/>
-</form>
+<a class="create-btn" th:href="@{/admin/new}">Создать нового пользователя</a>
 </body>
 </html>

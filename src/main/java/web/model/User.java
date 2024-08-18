@@ -4,7 +4,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
 
@@ -14,27 +13,38 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String username;
+
     private String name;
     private String lastname;
     private byte age;
     private String city;
+
+    @Column(nullable = false)
     private String password;
+
+    private String email;
+
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "t_users_t_role",
+            joinColumns = @JoinColumn(name = "User_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles;
 
     public User() {
     }
 
-    public User(String name, String lastname, byte age, String city) {
+    public User(String username, String name, String lastname, byte age, String city, String email) {
+        this.username = username;
         this.name = name;
         this.lastname = lastname;
         this.age = age;
         this.city = city;
+        this.email = email;
     }
-
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
-    private String email;
 
     public Long getId() {
         return id;
@@ -42,6 +52,18 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -100,7 +122,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override

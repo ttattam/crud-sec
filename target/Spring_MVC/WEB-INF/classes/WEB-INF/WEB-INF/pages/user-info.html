@@ -1,18 +1,31 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>User Information</title>
+    <title>Информация о пользователе</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .logout-btn { display: inline-block; margin-top: 10px; padding: 5px 10px; text-decoration: none; color: white; background-color: #dc3545; border-radius: 3px; }
+    </style>
 </head>
 <body>
-<h1>User Information</h1>
-<div>
-    <p>Username: <span th:text="${user.username}"></span></p>
-    <p>Email: <span th:text="${user.email}"></span></p>
-    <p>Age: <span th:text="${user.age}"></span></p>
-    <p>Roles: <span th:text="${user.roles}"></span></p>
+<div class="container">
+    <h1>Информация о пользователе</h1>
+
+    <div sec:authorize="isAuthenticated()">
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Выйти" class="logout-btn"/>
+        </form>
+    </div>
+
+    <div>
+        <p><strong>Имя пользователя:</strong> <span th:text="${user.username}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+        <p><strong>Возраст:</strong> <span th:text="${user.age}"></span></p>
+        <p><strong>Роли:</strong> <span th:text="${user.roles}"></span></p>
+    </div>
 </div>
-<form th:action="@{/logout}" method="post">
-    <input type="submit" value="Logout"/>
-</form>
 </body>
 </html>

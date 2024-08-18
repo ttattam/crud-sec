@@ -7,6 +7,7 @@ import web.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Component
@@ -46,8 +47,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findByUsername(String username) {
-        return entityManager.createQuery("from User where username = :username", User.class)
-                .setParameter("username", username)
-                .getSingleResult();
+        try {
+            return entityManager.createQuery("FROM User WHERE username = :username", User.class)
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }
